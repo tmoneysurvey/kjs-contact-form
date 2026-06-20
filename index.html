@@ -153,6 +153,19 @@
             color: #7d2ae8;
         }
 
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        input:invalid ~ .error-message,
+        select:invalid ~ .error-message,
+        textarea:invalid ~ .error-message {
+            display: block;
+        }
+
         @media (max-width: 480px) {
             .container {
                 padding: 10px;
@@ -241,5 +254,42 @@
             </form>
         </div>
     </div>
+
+    <script>
+        const form = document.querySelector('form');
+        const requiredFields = form.querySelectorAll('[required]');
+
+        form.addEventListener('submit', (e) => {
+            let hasErrors = false;
+
+            requiredFields.forEach(field => {
+                const value = field.type === 'radio'
+                    ? form.querySelector(`input[name="${field.name}"]:checked`)
+                    : field.value.trim();
+
+                if (!value) {
+                    hasErrors = true;
+                    field.setCustomValidity('Please fill out this field.');
+                    field.reportValidity();
+                } else {
+                    field.setCustomValidity('');
+                }
+            });
+
+            if (hasErrors) {
+                e.preventDefault();
+            }
+        });
+
+        // Clear custom validity when user starts typing
+        requiredFields.forEach(field => {
+            field.addEventListener('input', () => {
+                field.setCustomValidity('');
+            });
+            field.addEventListener('change', () => {
+                field.setCustomValidity('');
+            });
+        });
+    </script>
 </body>
 </html>
